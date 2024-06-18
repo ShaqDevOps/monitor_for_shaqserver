@@ -1,0 +1,5 @@
+# Ignore Docker and Python files
+.DS_Store
+*.log
+*.pyc
+__pycache__/
