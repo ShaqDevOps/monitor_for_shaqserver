@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/your-repo/prometheus-grafana-config.git'
+                git 'https://github.com/ShaqDevOps/monitor_for_shaqserver.git'
             }
         }
         stage('Deploy Prometheus and Grafana') {
