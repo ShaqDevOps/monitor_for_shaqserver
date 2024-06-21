@@ -18,6 +18,8 @@ scrape_configs:
           - https://shaqserver.com/store/faq
           - https://shaqserver.com/accounts/login/
           - https://shaqserver.com/accounts/google/login/
+          - https://shaqserver.com/SignUp/SignUpForm/
+          - https://shaqserver.com/accounts/password/reset/
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
