@@ -1,5 +1,27 @@
+global:
+  scrape_interval: 15s
+
 scrape_configs:
   - job_name: 'meowmart'
     static_configs:
       - targets: ['shaqserver.com:443']
     scheme: https
+
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]  # This module checks for HTTP 200 responses
+    static_configs:
+      - targets:
+          - https://shaqserver.com/
+          - https://shaqserver.com/store/products/products_page/
+          - https://shaqserver.com/store/faq
+          - https://shaqserver.com/accounts/login/
+          - https://shaqserver.com/accounts/google/login/
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115  # Updated to use the Docker service name

@@ -1,16 +1,35 @@
 pipeline {
-    agent any
+    agent { label 'jenkins-slave-with-monitoring' }
 
     stages {
-        stage('Clone Repository') {
+        stage('Clone or Update Repository') {
             steps {
-                git 'https://github.com/ShaqDevOps/monitor_for_shaqserver.git'
+                script {
+                    if (fileExists('monitor_for_shaqserver')) {
+                        dir('monitor_for_shaqserver') {
+                            sh 'git pull'
+                        }
+                    } else {
+                        sh 'git clone https://github.com/ShaqDevOps/monitor_for_shaqserver.git'
+                    }
+                }
             }
         }
         stage('Deploy Prometheus and Grafana') {
             steps {
                 script {
-                    sh 'docker-compose -f docker-compose.yml up -d'
+                    sh '''
+                        cd monitor_for_shaqserver
+                        docker-compose -f docker-compose.yml up -d
+                    '''
+                }
+            }
+        }
+        stage('Verify Grafana') {
+            steps {
+                script {
+                    // Check if Grafana is running
+                    sh 'curl -f http://localhost:3000 || exit 1'
                 }
             }
         }
@@ -19,6 +38,9 @@ pipeline {
     post {
         always {
             echo 'Pipeline finished.'
+        }
+        failure {
+            echo 'Pipeline failed. Check logs for details.'
         }
     }
 }
